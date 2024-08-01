@@ -11,13 +11,16 @@ import Typography from '@mui/material/Typography';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { Box, Checkbox, FormControlLabel, FormGroup, TextField } from '@mui/material';
 import { GeneratePassword } from '../../function/generatePassword';
+import Modal from '@mui/material/Modal';
+import { xKeyGenerator } from '../../function/util';
+
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': { padding: theme.spacing(2) },
     '& .MuiDialogActions-root': { padding: theme.spacing(1) },
 }));
 
-function Modal({ handleClose }: any) {
+export function LGModal({ handleClose }: any) {
     const [checkData, setCheckData] = useState({ capital: false, special: false, number: false, Small: false });
     const [error, setError] = useState("");
     const [length, setLength] = useState<number | string>("");
@@ -136,7 +139,6 @@ function Modal({ handleClose }: any) {
     );
 }
 
-export default React.memo(Modal);
 
 const MAX = 100;
 const MIN = 0;
@@ -178,5 +180,67 @@ function CustomMarks() {
                 </Typography>
             </Box>
         </Box>
+    );
+}
+
+
+// 
+;
+
+const style = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
+
+export function SimpleModal({ handleClose }: { handleClose: () => void }) {
+    const [error, setError] = useState("")
+    const [length, setLength] = useState(0);
+    const [text, setText] = useState("");
+
+    const generateID = () => {
+        if (length > 0 && length <= 256) {
+            setText(xKeyGenerator(length))
+        } else {
+            setError("length must between 1 - 256 ")
+        }
+    }
+
+    return (
+        <div>
+            <Modal
+                open={true}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        Enter the length
+                    </Typography>
+                    {error && <p className='error'>{error}</p>}
+                    <Box sx={{ width: '100%', marginTop: "5%" }}>
+                        <TextField fullWidth type='number' label="Length of password 1 - 256" value={length} onChange={(e) => { setError(""); setLength(Number(e.target.value)) }} id="fullWidth" />
+                        <div className="flex mt-2">
+                            <div className="ml-auto">
+                                <Button autoFocus variant='outlined' onClick={generateID}>Generate Now</Button>
+                            </div>
+                        </div>
+                        {text && <div className="flex items-center mt-1 w-full bg-gray-400 p-1 rounded">
+                            <p className="flex-1 break-all">{text}</p>
+                            <IconButton onClick={() => { navigator.clipboard.writeText(text); }}>
+                                <ContentCopyIcon />
+                            </IconButton>
+                        </div>}
+                    </Box>
+                </Box>
+            </Modal>
+        </div>
     );
 }

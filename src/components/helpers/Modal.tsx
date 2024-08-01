@@ -12,7 +12,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { Box, Checkbox, FormControlLabel, FormGroup, TextField } from '@mui/material';
 import { GeneratePassword } from '../../function/generatePassword';
 import Modal from '@mui/material/Modal';
-import { xKeyGenerator } from '../../function/util';
+import { shortUrl, urlPattern, xKeyGenerator } from '../../function/util';
 
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -184,20 +184,7 @@ function CustomMarks() {
 }
 
 
-// 
-;
 
-const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-};
 
 export function SimpleModal({ handleClose }: { handleClose: () => void }) {
     const [error, setError] = useState("")
@@ -220,7 +207,17 @@ export function SimpleModal({ handleClose }: { handleClose: () => void }) {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={style}>
+                <Box sx={{
+                    position: 'absolute' as 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 400,
+                    bgcolor: 'background.paper',
+                    border: '2px solid #000',
+                    boxShadow: 24,
+                    p: 4,
+                }}>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         Enter the length
                     </Typography>
@@ -234,10 +231,61 @@ export function SimpleModal({ handleClose }: { handleClose: () => void }) {
                         </div>
                         {text && <div className="flex items-center mt-1 w-full bg-gray-400 p-1 rounded">
                             <p className="flex-1 break-all">{text}</p>
-                            <IconButton onClick={() => { navigator.clipboard.writeText(text); }}>
-                                <ContentCopyIcon />
-                            </IconButton>
+                            <IconButton onClick={() => { navigator.clipboard.writeText(text); }}> <ContentCopyIcon /> </IconButton>
                         </div>}
+                    </Box>
+                </Box>
+            </Modal>
+        </div>
+    );
+}
+
+
+
+export function URLModal({ handleClose }: { handleClose: () => void }) {
+    const [error, setError] = useState("")
+    const [url, setURL] = useState("");
+    const [text, setText] = useState("")
+
+    const generateURL = () => {
+        if (urlPattern.test(text)) {
+            shortUrl(text).then(({ error, link }) => error ? setError(link) : setURL(link))
+        } else {
+            setError("Enter a valid url")
+        }
+    }
+
+    return (
+        <div>
+            <Modal
+                open={true}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={{
+                    position: 'absolute' as 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 400,
+                    bgcolor: 'background.paper',
+                    border: '2px solid #000',
+                    boxShadow: 24,
+                    p: 4,
+                }}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">Shorten URL</Typography>
+                    {error && <p className='error'>{error}</p>}
+                    <Box sx={{ width: '100%', marginTop: "5%" }}>
+                        <TextField fullWidth type='text' label="URL" value={text} onChange={(e) => { setError(""); setText(e.target.value) }} id="fullWidth" />
+                        <div className="flex mt-2">
+                            <div className="ml-auto"> <Button autoFocus variant='outlined' onClick={generateURL}>Generate Now</Button></div>
+                        </div>
+                        {url &&
+                            <div className="flex items-center mt-1 w-full bg-gray-400 p-1 rounded">
+                                <p className="flex-1 break-all">{url}</p>
+                                <IconButton onClick={() => { navigator.clipboard.writeText(url); }}> <ContentCopyIcon /> </IconButton>
+                            </div>}
                     </Box>
                 </Box>
             </Modal>

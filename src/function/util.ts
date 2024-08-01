@@ -6,11 +6,15 @@ export const shortUrl = async (URL: string) => {
         const apiKey = import.meta.env.VITE_APP_BITLY
         const url = import.meta.env.VITE_APP_URL
         const { data } = await axios.post(url, { long_url: URL }, { headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' } });
-        return data
-    } catch (err) {
-        console.log(err)
+        return { error: false, link: data.link }
+    } catch (err: any) {
+        console.log(err.message)
+        return { error: true, link: err.message ?? "Internal error" }
     }
 }
+
+export const urlPattern = /^(https?:\/\/)(?!localhost|(?:\d{1,3}\.){3}\d{1,3})([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
+
 
 export const xKeyGenerator = (length: string | number): string => {
     try {

@@ -6,6 +6,7 @@ import { TypingText } from './helpers/text';
 import { useInView } from 'react-intersection-observer';
 import GLOBE from 'vanta/dist/vanta.globe.min';
 import * as THREE from 'three';
+import Online from './Online';
 
 function Home() {
     const [open, setOpen] = useState<number | null>(null);
@@ -130,7 +131,7 @@ function Home() {
                             initial={{ opacity: 0, x: index % 2 === 0 ? -200 : 200 }}
                             animate={sectionInView ? { opacity: 1, x: 0 } : { opacity: 0, x: index % 2 === 0 ? -200 : 200 }}
                             transition={{ duration: 0.3 }}
-                            className="mt-14 ml-5"
+                            className="mt-14 ml-5 mr-5"
                             id={item.id}
                         >
                             <p className="text-xl font-bold">{item.heading}</p>
@@ -145,6 +146,7 @@ function Home() {
                                     </div>
                                 </div>
                             </div>
+                            {index === 3 && <Online />}
                             <div className='bg-black w-full mt-5 h-[2px]' />
                         </motion.div>
                     ))}
@@ -153,6 +155,7 @@ function Home() {
                 {open === 0 && <LGModal handleClose={handleClose} />}
                 {open === 1 && <SimpleModal handleClose={handleClose} />}
                 {open === 2 && <URLModal handleClose={handleClose} />}
+
 
                 <div className="w-full mt-8">
                     <h1 className="text-center text-2xl font-bold">Feedback</h1>

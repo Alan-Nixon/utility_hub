@@ -1,6 +1,7 @@
 import { memo, useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface todoInterface {
     Title: string,
@@ -9,7 +10,7 @@ interface todoInterface {
     Created: string
 }
 
-function Online() {
+function Online({ handleClose }: { handleClose: () => void }) {
     const [currentPage, setCurrentPage] = useState(1);
     const [input, setInput] = useState({ Title: "", Content: "", userEmail: "", Created: "" })
     const [todo, setTodo] = useState<todoInterface[]>([]);
@@ -62,7 +63,7 @@ function Online() {
 
     return (
         <div className="w-full p-2 bg-gray-200 rounded-sm mt-5">
-            <h2 className="text-xl font-bold">UPSERT YOUR NOTE</h2>
+            <div className="flex"><h2 className="text-xl w-full font-bold">UPSERT YOUR NOTE</h2><span className='cursor-pointer' onClick={handleClose}><CloseIcon /></span></div>
             <div className="flex flex-col md:flex-row">
 
                 <div className="w-full md:w-1/2 mt-4">

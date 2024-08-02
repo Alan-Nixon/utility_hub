@@ -85,7 +85,9 @@ function Home() {
 
     return (
         <>
-            <div id='foregroundImage' ref={vantaRef} className="relative w-full h-[450px] overflow-hidden" />
+            <div id='#' ref={vantaRef} className="relative w-full h-[450px] overflow-hidden" >
+                <span className="text-white font-bold m-3 mt-2">Utility Hub</span>
+            </div>
 
             <div className="m-3">
                 <p className='text-2xl font-bold'><TypingText text='Welcome to Utility Hub' /></p>
@@ -146,7 +148,7 @@ function Home() {
                                     </div>
                                 </div>
                             </div>
-                            {index === 3 && <Online />}
+                            {open === 3 && index === 3 && <Online handleClose={handleClose} />}
                             <div className='bg-black w-full mt-5 h-[2px]' />
                         </motion.div>
                     ))}

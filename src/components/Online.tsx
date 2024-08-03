@@ -2,36 +2,38 @@ import { memo, useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
 import CloseIcon from '@mui/icons-material/Close';
+import { todoInterface, User } from '../function/util';
+import { addOnlineNote, deleteDocument, getDocumentsByUserId, onAuthChangeFunction, updateDocument } from '../function/firebaseFunctions';
+import { LoadingPage } from './helpers/text';
 
-interface todoInterface {
-    Title: string,
-    Content: string,
-    userEmail: string,
-    Created: string
-}
+
 
 function Online({ handleClose }: { handleClose: () => void }) {
     const [currentPage, setCurrentPage] = useState(1);
-    const [input, setInput] = useState({ Title: "", Content: "", userEmail: "", Created: "" })
+    const [input, setInput] = useState<todoInterface>({ Title: "", Content: "", userEmail: "", Created: "" })
     const [todo, setTodo] = useState<todoInterface[]>([]);
+    const [user, setUserData] = useState<User>()
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const todo = new Array(0).fill({
-            Title: "birthday",
-            Content: "Upcoming birthday of alan nixon paliakkara and it is in august 16",
-            userEmail: "alannixon2520@gmail.com",
-            Created: "1 August 2024 at 17:41:22 UTC+5:30",
-        });
-        setTodo(todo)
-    }, [])
+
+        console.log(user);
+        onAuthChangeFunction(setUserData).then(() => setLoading(false));
+        if (user && user?.uid) { getDocumentsByUserId(user?.uid).then((data) => setTodo(data)) }
+
+    }, [user])
 
 
 
     const saveOnlineNote = () => {
-        if (input.userEmail) {
-
+        if (input.userId) {
+            const data = { ...input, Created: new Date() + "" }
+            updateDocument(input.id + "", data)
+            setTodo(prevTodos => prevTodos.map(todo => todo.id === input.id ? { ...todo, ...data } : todo));
+            setInput({ Title: "", Content: "", userEmail: "", Created: "" })
         } else {
-            const other = { userEmail: "", Created: new Date() + "" }
+            const other = { userEmail: user?.Email + "", Created: new Date() + "" }
+            addOnlineNote({ ...input, userId: user?.uid, ...other });
             setInput({ Title: "", Content: "", userEmail: "", Created: "" })
             setTodo([{ ...input, ...other }, ...todo])
         }
@@ -39,8 +41,9 @@ function Online({ handleClose }: { handleClose: () => void }) {
 
     const deleteTodo = (index: number) => {
         const deleted = [...todo].filter((_, i) => i !== index);
-        setTodo(deleted)
-        // delete fire base code
+        setTodo(deleted);
+        alert(todo[index].id + "")
+        deleteDocument(todo[index].id + "")
     }
 
     const itemsPerPage = 2;
@@ -60,6 +63,8 @@ function Online({ handleClose }: { handleClose: () => void }) {
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = todo.slice(indexOfFirstItem, indexOfLastItem);
+
+    if (loading) { return <LoadingPage /> }
 
     return (
         <div className="w-full p-2 bg-gray-200 rounded-sm mt-5">

@@ -8,4 +8,4 @@ export const validateName = (Name: string) => /^(?=.*[a-zA-Z]).{3,}$/.test(Name.
 
 export const validateFullName = (FullName: string) => /^(?=.*[ _]).{6,}$/.test(FullName.trim());
 
-export const validateDescription = (description: string) => /^(?![\W_]+$)(?:\b\w+\b\s?){10,}$/.test(description.trim());
+export const validateDescription = (description: string) => /^(?!.*^[^\w\s]+$)(?=(?:\b\w+\b\s*){10,}).*$/.test(description);

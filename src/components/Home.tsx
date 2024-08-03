@@ -6,21 +6,21 @@ import { LoadingPage, TypingText } from './helpers/text';
 import { useInView } from 'react-intersection-observer';
 import Online from './Online';
 import VantaHead from './helpers/vantaHead';
-import { sections, services } from '../function/util';
+import { feedbackType, sections, services } from '../function/util';
 import { onAuthChangeFunction } from '../function/firebaseFunctions';
 import { validateDescription, validateEmail, validateName } from '../function/validations';
-
+import { sendEmail } from '../function/EmailJs';
+import { toast } from 'react-toast';
 
 function Home() {
     const [open, setOpen] = useState<number | null>(null);
     const [user, setUserData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("")
-    const [feedback, setFeed] = useState({ Name: "", Email: "", Feedback: "" })
+    const [feedback, setFeed] = useState<feedbackType>({ Name: "", Email: "", Feedback: "" })
     const handleClose = () => setOpen(null);
 
     useEffect(() => {
-        console.log(user)
         onAuthChangeFunction(setUserData).then(() => {
             setLoading(false);
         })
@@ -40,10 +40,14 @@ function Home() {
         if (validateName(feedback.Name)) {
             if (validateEmail(feedback.Email)) {
                 if (validateDescription(feedback.Feedback)) {
-                    alert("success")
-                    console.log(feedback)
+                    sendEmail(feedback).then(() => {
+                        toast.success("successfully sent the feedback", {})
+                        setFeed({ Email: "", Feedback: "", Name: "" })
+                    }).catch(() => {
+                        toast.error("error occured while sending the feedback")
+                    })
                 } else {
-                    setError("Enter a valid description")
+                    setError("Enter a valid description, minimum 10 words")
                 }
             } else {
                 setError("Enter a valid email")
@@ -114,11 +118,22 @@ function Home() {
                                 <div className="w-full md:w-[50%] md:ml-5">
                                     <p className='mt-5 md:mt-20 text-center md:text-left'> <TypingText text={item.description} /></p>
                                     <div className="flex justify-center md:justify-end">
+                                        {!user && index === 3 &&
+                                            <div className="flex mr-auto mt-5 items-center p-2 mb-4 text-smrounded-lg text-blue-400" role="alert">
+                                                <svg className="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                                                </svg>
+                                                <span className="sr-only">Info</span>
+                                                <div>
+                                                    <span className="font-medium">Please Login to add Note</span>
+                                                </div>
+                                            </div>
+                                        }
                                         <button type="button" onClick={() => setOpen(index)} className="text-white mt-3 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800">{item.buttonText}</button>
                                     </div>
                                 </div>
                             </div>
-                            {open === 3 && index === 3 && <Online handleClose={handleClose} />}
+                            {user && open === 3 && index === 3 && <Online handleClose={handleClose} />}
                             <div className='bg-black w-full mt-5 h-[2px]' />
                         </motion.div>
                     ))}
@@ -133,7 +148,7 @@ function Home() {
                     <h1 className="text-center text-2xl font-bold">Feedback</h1>
                     <div className="flex w-full mt-8">
                         <div className="mx-auto w-full px-4 md:w-3/4 lg:w-3/4">
-                            {!error && <p className='error mb-2' >{error}fed</p>}
+                            {error && <p className='error mb-2' >{error}</p>}
                             <Box sx={{ width: '100%' }}>
                                 <TextField fullWidth onChange={(e) => handleInput("Name", e.target.value)} label="Name" id="fullWidth" />
                             </Box>

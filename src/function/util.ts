@@ -7,9 +7,23 @@ export interface User {
     firstName: string,
     lastName: string,
     Phone: string,
-    uid?:string
+    uid?: string
 }
 
+export type feedbackType = {
+    Name: string,
+    Email: string,
+    Feedback: string
+}
+
+export interface todoInterface {
+    Title: string,
+    Content: string,
+    userEmail: string,
+    Created: string,
+    userId?:string,
+    id?:string
+}
 
 export const shortUrl = async (URL: string) => {
     try {

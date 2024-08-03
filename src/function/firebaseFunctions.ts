@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getFirestore, setDoc } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where } from 'firebase/firestore'
 
 import { auth } from './firebase';
 
@@ -7,10 +7,9 @@ import {
     signInWithEmailAndPassword, onAuthStateChanged,
     updateProfile
 } from 'firebase/auth';
-import { User } from './util';
+import { todoInterface, User } from './util';
 
 const firestore = getFirestore();
-
 
 
 async function addDocument(data: User) {
@@ -31,6 +30,70 @@ async function addDocument(data: User) {
             console.error('Error creating user:', error);
             return { status: false, message: error.message ?? "Internal error occured" }
         }
+    }
+}
+
+export async function addOnlineNote(doc: todoInterface) {
+    try {
+        const colRef = collection(firestore, "online_notes");
+        const docRef = await addDoc(colRef, doc); 
+        return { status: true, message: docRef.id }
+
+    } catch (error: any) {
+        if (error.code === 'auth/email-already-in-use') {
+            console.log('Document already exists');
+            return { status: false, message: "Document already exists" }
+        } else {
+            console.error('Error creating user:', error);
+            return { status: false, message: error.message ?? "Internal error occured" }
+        }
+    }
+}
+
+export async function updateDocument(documentId:string, updatedData:todoInterface) {
+    try {
+        
+      const docRef = doc(firestore, "online_notes", documentId);
+      await updateDoc(docRef, { Title:updatedData.Title, Content:updatedData.Content });
+      console.log("Document updated with ID: ", documentId);
+      
+    } catch (e) {
+      console.error("Error updating document: ", e);
+    }
+  }
+
+
+  export const deleteDocument = async (documentId: string) => {
+    try {
+      const docRef = doc(firestore, 'online_notes', documentId);
+      await deleteDoc(docRef);
+      console.log('Document deleted with ID: ', documentId);
+    } catch (e) {
+      console.error('Error deleting document: ', e);
+      throw e;
+    }
+  };
+
+export async function getDocumentsByUserId(userId: string) {
+    try {
+        const colRef = collection(firestore, "online_notes");
+        const q = query(colRef, where("userId", "==", userId));
+        const querySnapshot = await getDocs(q);
+        const documents: todoInterface[] = [];
+        querySnapshot.forEach((doc) => {
+            documents.push({
+                id: doc.id,
+                Title: '',
+                Content: '',
+                userEmail: '',
+                Created: '',
+                ...doc.data(),
+            });
+        });
+        return documents;
+    } catch (e) {
+        console.error("Error getting documents: ", e);
+        return []
     }
 }
 

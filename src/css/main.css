@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 body {
+    overflow-x: hidden;
     overflow: -moz-scrollbars-none;
     -ms-overflow-style: none;
 }
@@ -29,5 +30,12 @@ body {
     border-radius: 5px;
     margin-bottom: 1rem;
     cursor: pointer;
-  }
-  
+}
+
+.scrollNoDiv::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollHidden {
+    overflow: hidden;
+}

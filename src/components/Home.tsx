@@ -1,93 +1,63 @@
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { SimpleModal, LGModal, URLModal } from './helpers/Modal';
 import { Box, Button, TextField } from '@mui/material';
 import { motion } from 'framer-motion';
-import { TypingText } from './helpers/text';
+import { LoadingPage, TypingText } from './helpers/text';
 import { useInView } from 'react-intersection-observer';
-import GLOBE from 'vanta/dist/vanta.globe.min';
-import * as THREE from 'three';
 import Online from './Online';
+import VantaHead from './helpers/vantaHead';
+import { sections, services } from '../function/util';
+import { onAuthChangeFunction } from '../function/firebaseFunctions';
+import { validateDescription, validateEmail, validateName } from '../function/validations';
+
 
 function Home() {
     const [open, setOpen] = useState<number | null>(null);
-
-    const vantaRef = useRef<HTMLDivElement | null>(null);
-    const vantaEffect = useRef<any>(null);
+    const [user, setUserData] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("")
+    const [feedback, setFeed] = useState({ Name: "", Email: "", Feedback: "" })
+    const handleClose = () => setOpen(null);
 
     useEffect(() => {
-        if (!vantaEffect.current && vantaRef.current) {
-            vantaEffect.current = GLOBE({
-                el: vantaRef.current,
-                mouseControls: true,
-                touchControls: true,
-                gyroControls: false,
-                minHeight: 200.00,
-                minWidth: 200.00,
-                scale: 1.00,
-                scaleMobile: 1.00,
-                color: 0xff3f81,
-                backgroundColor: 0x23153c,
-                points: 10,
-                maxDistance: 20,
-                spacing: 15,
-                showDots: true,
-                THREE: THREE
-            });
-        }
+        console.log(user)
+        onAuthChangeFunction(setUserData).then(() => {
+            setLoading(false);
+        })
+    }, [user])
 
-        return () => {
-            if (vantaEffect.current) vantaEffect.current.destroy();
-        };
-    }, []);
-
-    const services = [
-        { redirect: "#passwordDescription", image: "/service_password.jpg", text: "Service Password" },
-        { redirect: "#uniqueDiv", image: "/service_unique_generator.avif", text: "Unique Generator" },
-        { redirect: "#shortnerDiv", image: "/services_url.jpeg", text: "URL Services" },
-        { redirect: "#onlineNoteDiv", image: "/service_1note.jpeg", text: "Online Note Service" }
-    ];
-
-    const sections = [
-        {
-            heading: "Password Generator",
-            id: "passwordDescription",
-            description: `Welcome to our Password Generator! This tool is designed to help you create secure and random passwords with ease. You can customize your password by specifying the length and complexity, choosing to include uppercase letters, lowercase letters, numbers, and special characters. Whether you need a simple, medium, or strong password, our generator has you covered. Once your password is generated, it will be displayed on the screen and automatically copied to your clipboard for easy use. Ensure your online security with our reliable and user-friendly password generator.`,
-            image: "/service_password.jpg",
-            buttonText: "Generate Password"
-        },
-        {
-            heading: "Unique id generator",
-            id: "uniqueDiv",
-            description: `Welcome to our Unique Key Generator! This tool is designed to help you create unique keys with ease. Simply provide a number between 0 and 256, and our generator will produce a unique identifier for you. Each key is crafted to ensure uniqueness and reliability, making it ideal for a variety of applications. Whether you need a unique ID for database entries, user sessions, or any other purpose, our generator has you covered. Once your key is generated, it will be displayed on the screen and ready for immediate use. Enhance your project with our efficient and user-friendly key generator.`,
-            image: "/service_unique_generator.avif",
-            buttonText: "Generate Unique id"
-        },
-        {
-            heading: "Url shortner",
-            id: "shortnerDiv",
-            description: `Welcome to our URL Shortener! We have integrated Bitly to provide you with quick and easy URL shortening services. Simply enter your long URL, and our tool will generate a shortened link using Bitly. This helps you save space, manage links efficiently, and track your link’s performance. Once your URL is shortened, it will be displayed on the screen, and you can use it immediately. Simplify your URL management with our reliable and user-friendly URL shortener`,
-            image: "/services_url.jpeg",
-            buttonText: "Url short now"
-        },
-        {
-            heading: "Online Note",
-            id: "onlineNoteDiv",
-            description: `Welcome to our Online Note Saver! This tool allows you to create, edit, save, and delete notes effortlessly. Keep your thoughts, tasks, and ideas organized with our intuitive interface. Each note can be easily edited or deleted, ensuring you have complete control over your content. Whether you need to jot down a quick reminder or store detailed information, our Online Note Saver has you covered. Your notes are securely saved and can be accessed anytime, making it a reliable companion for your daily needs. Experience the convenience of managing your notes with our user-friendly note-saving tool.`,
-            image: "/service_1note.jpeg",
-            buttonText: "Create a note"
-        }
-    ];
-
-    const handleClose = () => setOpen(null);
 
     const { ref: servicesRef, inView: servicesInView } = useInView({ triggerOnce: true });
     const { ref: sectionRef, inView: sectionInView } = useInView({ triggerOnce: true });
 
+    const handleInput = (feild: string, value: string) => {
+        setFeed((rest) => ({ ...rest, [feild]: value }));
+        setError("")
+    }
+
+
+    const submitReport = () => {
+        if (validateName(feedback.Name)) {
+            if (validateEmail(feedback.Email)) {
+                if (validateDescription(feedback.Feedback)) {
+                    alert("success")
+                    console.log(feedback)
+                } else {
+                    setError("Enter a valid description")
+                }
+            } else {
+                setError("Enter a valid email")
+            }
+        } else {
+            setError("Enter a valid name")
+        }
+    }
+
+    if (loading) { return <LoadingPage /> }
+
     return (
         <>
-            <div id='#' ref={vantaRef} className="relative w-full h-[450px] overflow-hidden" >
-                <span className="text-white font-bold m-3 mt-2">Utility Hub</span>
-            </div>
+            <VantaHead user={user} />
 
             <div className="m-3">
                 <p className='text-2xl font-bold'><TypingText text='Welcome to Utility Hub' /></p>
@@ -127,7 +97,7 @@ function Home() {
                 </div>
                 <div className="w-auto h-auto" ref={sectionRef} >
 
-                    {sections.map((item, index) => (
+                    {sections.map((item, index: number) => (
                         <motion.div
                             key={index}
                             initial={{ opacity: 0, x: index % 2 === 0 ? -200 : 200 }}
@@ -163,18 +133,19 @@ function Home() {
                     <h1 className="text-center text-2xl font-bold">Feedback</h1>
                     <div className="flex w-full mt-8">
                         <div className="mx-auto w-full px-4 md:w-3/4 lg:w-3/4">
+                            {!error && <p className='error mb-2' >{error}fed</p>}
                             <Box sx={{ width: '100%' }}>
-                                <TextField fullWidth label="Name" id="fullWidth" />
+                                <TextField fullWidth onChange={(e) => handleInput("Name", e.target.value)} label="Name" id="fullWidth" />
                             </Box>
                             <Box sx={{ width: '100%', marginTop: '2%' }}>
-                                <TextField fullWidth label="Email" id="fullWidth" />
+                                <TextField fullWidth onChange={(e) => handleInput("Email", e.target.value)} label="Email" id="fullWidth" />
                             </Box>
                             <Box sx={{ width: '100%', marginTop: '2%' }}>
-                                <TextField fullWidth multiline rows={4} label="Feedback" id="fullWidth" />
+                                <TextField fullWidth onChange={(e) => handleInput("Feedback", e.target.value)} multiline rows={4} label="Feedback" id="fullWidth" />
                             </Box>
                             <div className="flex">
                                 <div className="ml-auto mt-3">
-                                    <Button autoFocus variant='contained'>Submit Now</Button>
+                                    <Button autoFocus variant='contained' onClick={submitReport} >Submit Now</Button>
                                 </div>
                             </div>
                         </div>

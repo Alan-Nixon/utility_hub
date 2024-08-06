@@ -7,7 +7,15 @@ import { isLoggedIn } from "../function/firebaseFunctions";
 
 function Login() {
     const [loading, setLoading] = useState(true);
+    const [width, setWidth] = useState(window.screen.width)
     const Navigate = useNavigate()
+
+    useEffect(() => {
+        if (window.screen.width !== width) {
+            setWidth(width)
+        }
+
+    }, [width])
 
     useEffect(() => {
         isLoggedIn().then(log => {
@@ -20,10 +28,16 @@ function Login() {
 
     return (
         <div className="flex w-full h-full scrollHidden">
-            <VantaLogin />
+            <VantaLogin fullScreen={width < 860} children={<LoginInput />} />
+            {width >= 860 && <LoginInput />}
+        </div>
+    )
+
+    function LoginInput() {
+        return (<>
             <div className="w-full h-screen flex items-center justify-center">
-                <div className="w-full max-w-md">
-                    <h2 className="text-2xl font-bold text-center mb-5 text-black">Login</h2>
+                <div className="w-full max-w-md p-5">
+                    <h2 className={`text-2xl font-bold text-center mb-5 ${width < 860 ? "text-white" : "text-black"}`}>Login</h2>
                     <form className="w-full mx-auto">
                         <div className="relative z-0 w-full mb-5 group">
                             <input type="email" name="floating_email" id="floating_email" className="block text-black py-2.5 px-0 w-full font-normal  bg-transparent border-0 border-b-2 border-blue-500 outline-none ring-0 focus:border-blue-600 peer" placeholder=" " required />
@@ -50,9 +64,8 @@ function Login() {
                     </form>
                 </div>
             </div>
-
-        </div>
-    )
+        </>)
+    }
 }
 
 export default Login

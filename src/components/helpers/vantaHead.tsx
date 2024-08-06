@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as THREE from 'three';
 import GLOBE from 'vanta/dist/vanta.globe.min';
@@ -54,7 +54,7 @@ function VantaHead({ user }: any) {
 
 export default VantaHead;
 
-export function VantaLogin() {
+export function VantaLogin({ fullScreen, children }: { fullScreen: boolean, children: ReactNode }) {
     const vantaRef = useRef<HTMLDivElement | null>(null);
     const vantaEffect = useRef<any>(null);
 
@@ -85,7 +85,10 @@ export function VantaLogin() {
     }, []);
 
     return (
-        <div ref={vantaRef} className="relative h-screen w-[750px] overflow-hidden" />
+        <div ref={vantaRef} className={`relative h-screen overflow-hidden ${fullScreen ? "w-full" : "w-[650px]"}`}>
+            {fullScreen ? children : <></>} 
+        </div>
+
     );
 }
 

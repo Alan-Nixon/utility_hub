@@ -54,7 +54,7 @@ function VantaHead({ user }: any) {
 
 export default VantaHead;
 
-export function VantaLogin({ fullScreen, children }: { fullScreen: boolean, children: ReactNode }) {
+export function VantaLogin({ fullScreen, children }: any) {
     const vantaRef = useRef<HTMLDivElement | null>(null);
     const vantaEffect = useRef<any>(null);
 

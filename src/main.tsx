@@ -1,17 +1,9 @@
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './css/main.css'
+import * as serviceWorkerRegistration from './serviceWorkerRegistration.ts';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(<App />)
 
 
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js').then(registration => {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-      }).catch(error => {
-        console.log('ServiceWorker registration failed: ', error);
-      });
-    });
-  }
-  
+serviceWorkerRegistration.register();

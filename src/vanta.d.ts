@@ -21,4 +21,3 @@ declare module 'vanta/dist/vanta.topology.min' {
     export default TOPOLOGY;
 } 
 
-

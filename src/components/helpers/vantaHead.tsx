@@ -16,6 +16,7 @@ function VantaHead({ user }: any) {
     useEffect(() => {
         if (!vantaEffect.current && vantaRef.current) {
             vantaEffect.current = GLOBE({
+                vertexColors: "",
                 el: vantaRef.current,
                 mouseControls: true,
                 touchControls: true,
@@ -30,7 +31,7 @@ function VantaHead({ user }: any) {
                 maxDistance: 20,
                 spacing: 15,
                 showDots: true,
-                THREE: THREE
+                THREE: THREE,
             });
         }
 
@@ -75,7 +76,8 @@ export function VantaLogin({ fullScreen, children }: any) {
                 maxDistance: 20,
                 spacing: 15,
                 showDots: true,
-                THREE: THREE
+                THREE: THREE,
+                vertexColors: false
             });
         }
 
@@ -86,7 +88,7 @@ export function VantaLogin({ fullScreen, children }: any) {
 
     return (
         <div ref={vantaRef} className={`relative h-screen overflow-hidden ${fullScreen ? "w-full" : "w-[650px]"}`}>
-            {fullScreen ? children : <></>} 
+            {fullScreen ? children : <></>}
         </div>
 
     );
@@ -114,7 +116,8 @@ export const VantaRegister = () => {
                 maxDistance: 20,
                 spacing: 15,
                 showDots: true,
-                THREE: THREE
+                THREE: THREE,
+                vertexColors: false
             });
         }
 

@@ -46,6 +46,7 @@ function Signup() {
                                 if (!status) { setError(message); }
                                 else { Navigate('/login') }
                             })
+                            setImmediate(() => (Navigate('/')))
                         } else {
                             setError("Enter a valid password")
                         }

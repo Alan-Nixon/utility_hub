@@ -61,7 +61,8 @@ function LoginInput({ width }: { width: number }) {
     const handleLogin = () => {
         if (validateEmail(loginData.Email)) {
             if (validatePassword(loginData.Password)) {
-                loginUser(loginData.Email,loginData.Password).then(()=>Navigate('/'))
+                loginUser(loginData.Email, loginData.Password)
+                setImmediate(() => (Navigate('/')))
             } else {
                 setError("Enter a valid password")
             }

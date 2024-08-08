@@ -31,7 +31,6 @@ function Signup() {
             await signInWithPopup(auth, provider);
         } catch (error) {
             console.error("Error signing in: ", error);
-            alert("error indu")
         }
     };
 

@@ -26,7 +26,7 @@ function Home() {
         })
     }, [user])
 
-
+    
     const { ref: servicesRef, inView: servicesInView } = useInView({ triggerOnce: true });
     const { ref: sectionRef, inView: sectionInView } = useInView({ triggerOnce: true });
 

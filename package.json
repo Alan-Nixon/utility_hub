@@ -25,7 +25,8 @@
     "react-router-dom": "^6.26.0",
     "react-toast": "^1.0.3",
     "three": "^0.167.1",
-    "vanta": "^0.5.24"
+    "vanta": "^0.5.24",
+    "vite-plugin-pwa": "^0.20.1"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.6.0",

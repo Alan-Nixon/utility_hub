@@ -1,10 +1,26 @@
 import { defineConfig } from 'vite'
+import { VitePWA } from 'vite-plugin-pwa';
 import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev/config/
+
 export default defineConfig({
-  plugins: [react()],
-  server:{
-    open:true
+  plugins: [react(), PWA()],
+  server: {
+    open: true
   }
 })
+
+
+function PWA() {
+  return VitePWA({
+    registerType: 'autoUpdate',
+    includeAssets: ['favicon.svg', 'robots.txt', 'apple-touch-icon.png'],
+    manifest: {
+      name: 'My PWA',
+      short_name: 'PWA',
+      description: 'My awesome Progressive Web App!',
+      theme_color: '#ffffff',
+      icons: [ ],
+    },
+  })
+}
